@@ -6,7 +6,7 @@ const getListFromSearch = (key, list) => {
     return [...list];
   }
   return list.filter(item => {
-    return item.includes(key);
+    return item.toLowerCase().includes(key);
   });
 };
 
