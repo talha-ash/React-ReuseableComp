@@ -1,11 +1,5 @@
 import React, { useEffect, useRef, useState, useLayoutEffect } from "react";
 import style from "./style.module.css";
-const ListItemTemp = [
-  "Hello World",
-  "NiceWorld",
-  "Bad World",
-  "Sposicated World"
-];
 
 const getListFromSearch = (key, list) => {
   if (key === "") {
@@ -53,7 +47,7 @@ const SearchDropDown = props => {
     setIsActive(false);
   };
   const handleInputChange = e => {
-    let ListItems = getListFromSearch(InputRef.current.value, ListItemTemp);
+    let ListItems = getListFromSearch(InputRef.current.value, props.list);
     if (ListItems.length >= 1) {
       setIsActive(true);
       setListItems(ListItems);

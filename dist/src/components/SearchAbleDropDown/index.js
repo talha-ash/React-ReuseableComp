@@ -31,8 +31,6 @@ function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.
 
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
 
-var ListItemTemp = ["Hello World", "NiceWorld", "Bad World", "Sposicated World"];
-
 var getListFromSearch = function getListFromSearch(key, list) {
   if (key === "") {
     return _toConsumableArray(list);
@@ -76,24 +74,39 @@ var SearchDropDown = function SearchDropDown(props) {
   (0, _react.useEffect)(function () {
     if (isActive) {
       ListRef.current.classList.add("active");
+      document.addEventListener("mousedown", handleMouseClick, false);
     } else {
       ListRef.current.classList.remove("active");
+      document.removeEventListener("mousedown", handleMouseClick, false);
     }
-  });
+
+    return function () {
+      document.removeEventListener("mousedown", handleMouseClick, false);
+    };
+  }, [isActive, listItems]);
+
+  var handleMouseClick = function handleMouseClick(e) {
+    if (ListRef.current.contains(e.target)) {
+      return;
+    }
+
+    setIsActive(false);
+  };
 
   var handleInputChange = function handleInputChange(e) {
-    var ListItems = getListFromSearch(InputRef.current.value, ListItemTemp);
+    var ListItems = getListFromSearch(InputRef.current.value, props.list);
 
     if (ListItems.length >= 1) {
       setIsActive(true);
+      setListItems(ListItems);
     } else {
       setIsActive(false);
     }
-
-    setListItems(ListItems);
   };
 
-  var handleItemSelect = function handleItemSelect(e) {};
+  var handleItemSelect = function handleItemSelect(item) {
+    InputRef.current.value = item;
+  };
 
   var CloneInput = _react.default.useCallback(function () {
     return _react.default.cloneElement(props.children[0], {
@@ -109,7 +122,9 @@ var SearchDropDown = function SearchDropDown(props) {
       children: listItems.map(function (item) {
         return _react.default.createElement("li", {
           key: item,
-          onClick: handleItemSelect
+          onClick: function onClick() {
+            return handleItemSelect(item);
+          }
         }, item);
       })
     });
