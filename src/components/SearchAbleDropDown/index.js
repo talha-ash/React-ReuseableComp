@@ -36,21 +36,35 @@ const SearchDropDown = props => {
   useEffect(() => {
     if (isActive) {
       ListRef.current.classList.add("active");
+      document.addEventListener("mousedown", handleMouseClick, false);
     } else {
       ListRef.current.classList.remove("active");
+      document.removeEventListener("mousedown", handleMouseClick, false);
     }
-  });
+    return () => {
+      document.removeEventListener("mousedown", handleMouseClick, false);
+    };
+  }, [isActive, listItems]);
+
+  const handleMouseClick = e => {
+    if (ListRef.current.contains(e.target)) {
+      return;
+    }
+    setIsActive(false);
+  };
   const handleInputChange = e => {
     let ListItems = getListFromSearch(InputRef.current.value, ListItemTemp);
     if (ListItems.length >= 1) {
       setIsActive(true);
+      setListItems(ListItems);
     } else {
       setIsActive(false);
     }
-    setListItems(ListItems);
   };
 
-  const handleItemSelect = e => {};
+  const handleItemSelect = item => {
+    InputRef.current.value = item;
+  };
 
   const CloneInput = React.useCallback(() => {
     return React.cloneElement(props.children[0], {
@@ -65,7 +79,7 @@ const SearchDropDown = props => {
       ref: ListRef,
       children: listItems.map(item => {
         return (
-          <li key={item} onClick={handleItemSelect}>
+          <li key={item} onClick={() => handleItemSelect(item)}>
             {item}
           </li>
         );
